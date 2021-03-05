@@ -2,7 +2,8 @@ import urllib.request,re,os
 from urllib.parse import urlencode
 from http import cookiejar
 
-serverJ = os.getenv('PUSH_KEY');
+serverJ = os.getenv('PUSH_KEY')
+print(serverJ)
 
 def sendNotify (text,desp):
   api = "https://sc.ftqq.com/${serverJ}.send"
