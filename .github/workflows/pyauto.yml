@@ -21,8 +21,9 @@ jobs:
           python-version: 3.9.2
 
       - name: Run a multi-line script
-        run: pip install selenium
-        run: echo env
+        run: |
+         pip install selenium,
+         echo env
 
       - name: Run app
         run: python pyauto.py
