@@ -1,8 +1,8 @@
-import urllib.request,re
+import urllib.request,re,os
 from urllib.parse import urlencode
 from http import cookiejar
 
-serverJ = PUSH_KEY;
+serverJ = os.getenv('PUSH_KEY');
 
 
 subject='测试'
