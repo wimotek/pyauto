@@ -3,4 +3,4 @@ from urllib.parse import urlencode
 from http import cookiejar
 
 
-echo 'test3'
+print ('test3')
