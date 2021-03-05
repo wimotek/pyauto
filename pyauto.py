@@ -2,7 +2,7 @@ import urllib.request,re
 from urllib.parse import urlencode
 from http import cookiejar
 
-serverJ = process.env.PUSH_KEY;
+serverJ = PUSH_KEY;
 
 
 subject='测试'
