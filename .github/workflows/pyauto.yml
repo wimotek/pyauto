@@ -21,12 +21,10 @@ jobs:
           python-version: 3.9.2
 
       - name: Run a multi-line script
-        run: |
-          pip install selenium, 
-          echo install ok.
+        run: pip install selenium
 
      - name: Run app
-       run: py pyauto.py
+       run: python pyauto.py
        env:
         JD_COOKIE: ${{ secrets.JD_COOKIE }}
         JD_COOKIE_2: ${{ secrets.JD_COOKIE_2 }} 
