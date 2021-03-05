@@ -23,7 +23,7 @@ jobs:
       - name: Run a multi-line script
         run: |
          pip install selenium
-         echo env
+         env
 
       - name: Run app
         run: python pyauto.py
