@@ -1,0 +1,26 @@
+name: pyauto
+
+# Controls when the action will run. 
+on:
+  push:
+    paths:
+    - '**.py'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9.2
+
+      - name: Run a multi-line script
+        run: |
+          pip install selenium,
+          echo install ok.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
