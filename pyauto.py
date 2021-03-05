@@ -10,6 +10,7 @@ def sendNotify (text,desp):
     "text":text,
     "desp":desp
   }
+  data=urlencode(data).encode('utf-8',errors = 'ignore')
   req = urllib.request.urlopen(api,data = data).read().decode('utf-8')
   return req
 
