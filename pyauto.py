@@ -11,10 +11,10 @@ result=sendNotify(subject,message)
 print (result)
 
 def sendNotify (text,desp):
- api = "https://sc.ftqq.com/${serverJ}.send"
- data = {
-   "text":text,
-   "desp":desp
- }
- req = requests.post(api,data = data)
-return req
+  api = "https://sc.ftqq.com/${serverJ}.send"
+  data = {
+    "text":text,
+    "desp":desp
+  }
+  req = requests.post(api,data = data)
+  return req
