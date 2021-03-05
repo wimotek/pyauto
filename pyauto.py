@@ -1,4 +1,4 @@
-import urllib.request,re,requests
+import urllib.request,re
 from urllib.parse import urlencode
 from http import cookiejar
 
@@ -16,5 +16,5 @@ def sendNotify (text,desp):
     "text":text,
     "desp":desp
   }
-  req = requests.post(api,data = data)
+  req = urllib.request.urlopen(api,data = data).read().decode('utf-8')
   return req
