@@ -2,7 +2,7 @@ import urllib.request,re,os
 from urllib.parse import urlencode
 from http import cookiejar
 
-serverJ = os.environ.get('PUSH_KEY')
+serverJ = os.environ.get('eePUSH_KEY')
 print(serverJ)
 
 def sendNotify (text,desp):
