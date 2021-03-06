@@ -5,6 +5,7 @@ on:
   push:
     paths:
     - '**.py'
+  workflow_dispatch: # 手动触发
   schedule:
     - cron: '0 14 * * *'
 
