@@ -20,16 +20,15 @@ jobs:
         with:
           python-version: 3.9.2
 
-      - name: Run a multi-line script
+      - name: install requirements
         run: |
          pip install selenium
-         env
 
       - name: Run app
+        run: |
+         python pyauto.py
         env:
          JD_COOKIE: ${{ secrets.JD_COOKIE }}
          JD_COOKIE_2: ${{ secrets.JD_COOKIE_2 }} 
          PUSH_KEY: ${{ secrets.PUSH_KEY }}
-        run: |
-         echo $PUSH_KEY
-         python pyauto.py
+
