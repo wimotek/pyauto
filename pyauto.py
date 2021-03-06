@@ -5,7 +5,7 @@ from http import cookiejar
 serverJ = os.environ['PUSH_KEY']
 
 def sendNotify (text,desp):
-  api = 'https://sc.ftqq.com/'+serverJ+'.send'
+  api = 'https://sc.ftqq.com/{}.send'.format(serverJ)
   data = {
     "text":text,
     "desp":desp
@@ -14,7 +14,7 @@ def sendNotify (text,desp):
   req = urllib.request.urlopen(api,data = data).read().decode('utf-8')
   return req
 
-subject='测试'
+subject='测试1'
 message='from github'
 result=sendNotify(subject,message)
 print (result)
