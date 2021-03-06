@@ -4,10 +4,8 @@ from http import cookiejar
 
 serverJ = os.environ['PUSH_KEY']
 
-print(serverJ)
-
 def sendNotify (text,desp):
-  api = "https://sc.ftqq.com/${serverJ}.send"
+  api = 'https://sc.ftqq.com/'+serverJ+'.send'
   data = {
     "text":text,
     "desp":desp
