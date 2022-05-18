@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2021/9/26
-# @Author  : MashiroF
+# @Author  : 智多科技www.wimotek.com 交流群:34989949
 # @File    : digit_cn.py
 # @Software: IDLE
 
