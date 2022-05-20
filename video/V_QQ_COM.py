@@ -29,7 +29,7 @@ stream = logging.StreamHandler()
 stream.setFormatter(logFormat)
 logger.addHandler(stream)
 
-本地配置
+#本地配置
 #os.environ["V_QQ_COM_COOKIE"]=''
     
 # 配信文件
