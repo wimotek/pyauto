@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/9/26
 # @Author  : 智多科技www.wimotek.com 交流群:34989949
-# @File    : digit_cn.py
+# @File    : V_QQ_COM.py
 # @Software: IDLE
 
 '''
@@ -30,7 +30,7 @@ stream.setFormatter(logFormat)
 logger.addHandler(stream)
 
 本地配置
-#os.environ["V_QQ_CN_COOKIE"]=''
+#os.environ["V_QQ_COM_COOKIE"]=''
     
 # 配信文件
 try:
@@ -48,13 +48,13 @@ def notify(content=None):
     logger.info(content)
 
 # 导入账户
-V_QQ_CN_COOKIE=''
-if "V_QQ_CN_COOKIE" in os.environ and os.environ["V_QQ_CN_COOKIE"]:
-    V_QQ_CN_COOKIE = os.environ["V_QQ_CN_COOKIE"]
-if V_QQ_CN_COOKIE:
-    ckArr= V_QQ_CN_COOKIE.split("@")
+V_QQ_COM_COOKIE=''
+if "V_QQ_COM_COOKIE" in os.environ and os.environ["V_QQ_COM_COOKIE"]:
+   V_QQ_COM_COOKIE = os.environ["V_QQ_COM_COOKIE"]
+if V_QQ_COM_COOKIE:
+    ckArr= V_QQ_COM_COOKIE.split("@")
 else:
-    logger.info(f'失败原因:请配置环境变量V_QQ_CN_COOKIE')
+    logger.info(f'失败原因:请配置环境变量V_QQ_COM_COOKIE')
     sys.exit(0)
     
 # 日志录入时间
@@ -105,7 +105,7 @@ def start():
     rsp_dict = json.loads(res[start_index + 1:end_index])
 
     if rsp_dict.get("ret") == -10006:
-        notify(f"签到失败:Cookie失效")
+        notify(f"签到失败:V_QQ_COM_COOKIE失效")
     elif rsp_dict.get("ret") == 0:
         notify(f"签到成功")
     else:
