@@ -12,6 +12,7 @@ new Env('腾讯视频签到');
 import os
 import re
 import sys
+import json
 import time
 import random
 import requests
@@ -28,8 +29,8 @@ stream = logging.StreamHandler()
 stream.setFormatter(logFormat)
 logger.addHandler(stream)
 
-#本地用
-#os.environ["V_QQ_CN_COOKIE"]='tvfe_boss_uuid=1ec8e1bd5f73a024; pgv_pvid=732836017; video_platform=2; video_guid=516e048c83a12e2eb4440f34036dd2e2; ptui_loginuin=25100295; RK=ae9YgWKhVC; ptcz=7aca5dbfdca341a8068baf21cfbbaa2900a20d85b4119581f564aaec852f517e; main_login=qq; vqq_access_token=A246CCFAB5E3B32891C77D600A11FB3B; vqq_appid=101483052; vqq_openid=73B08A20A40D5F45E39A2408D7DEEABB; vqq_vuserid=228012322; vqq_refresh_token=70A2184EC95A2347869482915AA3464D; pac_uid=0_aa8608140a2de; o_cookie=25100295; vqq_vusession=tNxxRYGnGurQWC8L_abwLw.N; vqq_next_refresh_time=6600; vqq_login_time_init=1652601691; pgv_info=ssid=s2071449216; login_time_last=2022-5-15 16:1:34'
+本地配置
+#os.environ["V_QQ_CN_COOKIE"]=''
     
 # 配信文件
 try:
@@ -48,16 +49,16 @@ def notify(content=None):
 
 # 导入账户
 V_QQ_CN_COOKIE=''
-if "MYDIGIT_COOKIE" in os.environ and os.environ["V_QQ_CN_COOKIE"]:
-    MYDIGIT_COOKIE = os.environ["V_QQ_CN_COOKIE"]
-if MYDIGIT_COOKIE:
-    ckArr= MYDIGIT_COOKIE.split("@")
+if "V_QQ_CN_COOKIE" in os.environ and os.environ["V_QQ_CN_COOKIE"]:
+    V_QQ_CN_COOKIE = os.environ["V_QQ_CN_COOKIE"]
+if V_QQ_CN_COOKIE:
+    ckArr= V_QQ_CN_COOKIE.split("@")
 else:
     logger.info(f'失败原因:请配置环境变量V_QQ_CN_COOKIE')
     sys.exit(0)
     
 # 日志录入时间
-notify(f"任务:数码之家签到\n时间:{time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())}")
+notify(f"任务:腾讯视频签到\n时间:{time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())}")
 
 
 
@@ -65,10 +66,17 @@ def start():
   
   #Headers信息
   headers = {
+         "User-Agent": "Mozilla/5.0 (Linux; U; Android 8.1.0; zh-cn; Mi Note 3 Build/OPM1.171019.019) "
+                       "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.128 "
+                       "Mobile Safari/537.36 XiaoMi/MiuiBrowser/10.0.2",
         'Referer': 'https://v.qq.com',
+        'Cookie':ck
   }
-  ck= requests.utils.dict_from_cookiejar(ck)
-
+  #截取到vqq_vusession=，之后的不要  记得加引号，等号需要保留
+  auth_cookie=ck.split("vqq_vusession=")
+  auth_cookie=auth_cookie[0]
+  print(auth_cookie)
+   
   try: 
     # 发送请求
     
@@ -77,24 +85,31 @@ def start():
     s.keep_alive = False    #关闭多余连接
     #s.proxies = {"https": "101.133.231.6:80", "http": "106.14.255.124:80", }
     s.headers.update(headers)
-    s.cookies.update(ck)
+
 
     #登录
     res=s.get(url)
     cookie = requests.utils.dict_from_cookiejar(res.cookies)
-    print(ck)
-    print("=====>",cookie)
-    ck['vqq_vusession']=cookie['vqq_vusession']
-    s.cookies.update(ck)
-    #签到
-    res=s.get(sign_url)
-    #print("==>",res.text)
+    auth_cookie = auth_cookie+'vqq_vusession='+cookie['vqq_vusession']+';'
 
+    auth_cookie={cookie.split('=')[0]:cookie.split('=')[-1] for cookie in auth_cookie.split(';')}
+    #s.cookies.update(auth_cookie)
+    #签到
+    res=s.get(sign_url).text
+    log.info(res)
     #推送消息
-    if 'Account Verify Error' in sign:
-        notify(f"签到失败")
-    else:
+    # QZOutputJson=({ "ret": 0,"checkin_score": 0,"msg":"OK"});
+    # QZOutputJson=({"msg":"Account Verify Error","ret":-10006});
+    start_index = res.index("(")
+    end_index = res.index(")")
+    rsp_dict = json.loads(res[start_index + 1:end_index])
+
+    if rsp_dict.get("ret") == -10006:
+        notify(f"签到失败:Cookie失效")
+    elif rsp_dict.get("ret") == 0:
         notify(f"签到成功")
+    else:
+        notify(f"签到失败:未知错误")
 
   except Exception as error: 
     logger.info(f'失败原因:{error}')
@@ -102,8 +117,9 @@ def start():
 
 
 if __name__ == '__main__':
+    millisecond_time = round(time.time() * 1000)
     url='https://access.video.qq.com/user/auth_refresh?type=qq&g_vstk=640926988&g_actk=768564498&raw=1&vappid=11059694&vsecret=fdf61a6be0aad57132bc5cdf78ac30145b6cd2c1470b0cfe'
-    sign_url='https://vip.video.qq.com/fcgi-bin/comm_cgi?name=hierarchical_task_system&cmd=2'
+    sign_url='https://vip.video.qq.com/fcgi-bin/comm_cgi?name=hierarchical_task_system&cmd=2'f"&_={str(millisecond_time)}"
     
     for ck in ckArr:
        start()
