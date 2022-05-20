@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Time    : 2021/9/26
-# @Author  : 智多科技www.wimotek.com 交流群:34989949
+# @Author  : 智多科技www.wimotek.com 交流群:34989949 转发请勿更改
 # @File    : digit_cn.py
 # @Software: IDLE
 
@@ -28,7 +28,8 @@ stream = logging.StreamHandler()
 stream.setFormatter(logFormat)
 logger.addHandler(stream)
 
-os.environ["MYDIGIT_COOKIE"]='VhUn_2132_saltkey=RObQXJjc; VhUn_2132_lastvisit=1652601034; VhUn_2132_auth=54ffEPYBZTWFDa1MMfimq3ujxqqneDLOw%2BmTtKtaqvKl%2BRXuXdXXSbcLUymXnJ7j8NNUH2kNrnOaOGTBRG77ckxMklGG; VhUn_2132_sid=0; VhUn_2132_connect_is_bind=1; VhUn_2132_nofavfid=1; VhUn_2132_ulastactivity=1652768740%7C0; VhUn_2132_lastcheckfeed=1867361%7C1652768742; VhUn_2132_sendmail=1; Hm_lvt_ab859ea8b00af2b447b0a7cdc5e2e13d=1652513384,1652603690,1652682985,1652768805; Hm_lpvt_ab859ea8b00af2b447b0a7cdc5e2e13d=1652768805; VhUn_2132_lastact=1652768745%09home.php%09spacecp'
+#本地配置
+#os.environ["MYDIGIT_COOKIE"]=''
     
 # 配信文件
 try:
