@@ -28,7 +28,8 @@ stream = logging.StreamHandler()
 stream.setFormatter(logFormat)
 logger.addHandler(stream)
 
-os.environ["V_QQ_CN_COOKIE"]='tvfe_boss_uuid=1ec8e1bd5f73a024; pgv_pvid=732836017; video_platform=2; video_guid=516e048c83a12e2eb4440f34036dd2e2; ptui_loginuin=25100295; RK=ae9YgWKhVC; ptcz=7aca5dbfdca341a8068baf21cfbbaa2900a20d85b4119581f564aaec852f517e; main_login=qq; vqq_access_token=A246CCFAB5E3B32891C77D600A11FB3B; vqq_appid=101483052; vqq_openid=73B08A20A40D5F45E39A2408D7DEEABB; vqq_vuserid=228012322; vqq_refresh_token=70A2184EC95A2347869482915AA3464D; pac_uid=0_aa8608140a2de; o_cookie=25100295; vqq_vusession=tNxxRYGnGurQWC8L_abwLw.N; vqq_next_refresh_time=6600; vqq_login_time_init=1652601691; pgv_info=ssid=s2071449216; login_time_last=2022-5-15 16:1:34'
+#本地用
+#os.environ["V_QQ_CN_COOKIE"]='tvfe_boss_uuid=1ec8e1bd5f73a024; pgv_pvid=732836017; video_platform=2; video_guid=516e048c83a12e2eb4440f34036dd2e2; ptui_loginuin=25100295; RK=ae9YgWKhVC; ptcz=7aca5dbfdca341a8068baf21cfbbaa2900a20d85b4119581f564aaec852f517e; main_login=qq; vqq_access_token=A246CCFAB5E3B32891C77D600A11FB3B; vqq_appid=101483052; vqq_openid=73B08A20A40D5F45E39A2408D7DEEABB; vqq_vuserid=228012322; vqq_refresh_token=70A2184EC95A2347869482915AA3464D; pac_uid=0_aa8608140a2de; o_cookie=25100295; vqq_vusession=tNxxRYGnGurQWC8L_abwLw.N; vqq_next_refresh_time=6600; vqq_login_time_init=1652601691; pgv_info=ssid=s2071449216; login_time_last=2022-5-15 16:1:34'
     
 # 配信文件
 try:
