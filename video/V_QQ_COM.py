@@ -105,7 +105,7 @@ def start():
     rsp_dict = json.loads(res[start_index + 1:end_index])
 
     if rsp_dict.get("ret") == -10006:
-        notify(f"签到失败:V_QQ_COM_COOKIE失效")
+        notify(f"签到失败:COOKIE失效")
     elif rsp_dict.get("ret") == 0:
         notify(f"签到成功")
     else:
