@@ -96,7 +96,7 @@ def start():
     #s.cookies.update(auth_cookie)
     #签到
     res=s.get(sign_url).text
-    log.info(res)
+    logger.info(res)
     #推送消息
     # QZOutputJson=({ "ret": 0,"checkin_score": 0,"msg":"OK"});
     # QZOutputJson=({"msg":"Account Verify Error","ret":-10006});
