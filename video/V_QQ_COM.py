@@ -72,10 +72,6 @@ def start():
         'Referer': 'https://v.qq.com',
         'Cookie':ck
   }
-  #截取到vqq_vusession=，之后的不要  记得加引号，等号需要保留
-  auth_cookie=ck.split("vqq_vusession=")
-  auth_cookie=auth_cookie[0]
-  print(auth_cookie)
    
   try: 
     # 发送请求
@@ -85,18 +81,11 @@ def start():
     s.keep_alive = False    #关闭多余连接
     #s.proxies = {"https": "101.133.231.6:80", "http": "106.14.255.124:80", }
     s.headers.update(headers)
-
-
     #登录
     res=s.get(url)
-    cookie = requests.utils.dict_from_cookiejar(res.cookies)
-    auth_cookie = auth_cookie+'vqq_vusession='+cookie['vqq_vusession']+';'
-
-    auth_cookie={cookie.split('=')[0]:cookie.split('=')[-1] for cookie in auth_cookie.split(';')}
-    #s.cookies.update(auth_cookie)
     #签到
     res=s.get(sign_url).text
-    logger.info(res)
+    #logger.info(res)
     #推送消息
     # QZOutputJson=({ "ret": 0,"checkin_score": 0,"msg":"OK"});
     # QZOutputJson=({"msg":"Account Verify Error","ret":-10006});
