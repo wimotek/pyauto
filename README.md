@@ -26,7 +26,7 @@ JDWXX 对任何脚本问题概不负责，包括但不限于由任何脚本错�
 
 青龙拉库
 
-ql repo https://github.com/wimotek/pyauto.git "forum|video" "" "sendNotify" "main"
+ql repo https://github.com/wimotek/pyauto.git "forum|video|netdisk" "Backup" "sendNotify" "main"
 
 添加一个定时任务,定时拉库命令,就可以定时更新仓库。可设置为0 0 0 * * *
 
