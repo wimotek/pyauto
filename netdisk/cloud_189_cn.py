@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# @Time    : 2021/9/26
+# @Time    : 2022/10/14
 # @Author  : 智多科技wimotek.com
 # @File    : could_189_cn.py
 # @Software: IDLE
@@ -58,9 +58,6 @@ else:
 # 日志录入时间
 notify(f"任务:天翼云签到脚本\n时间:{time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())}")
 
-
-
-
 class CheckIn(object):
     client = requests.Session()
     login_url = "https://cloud.189.cn/api/portal/loginUrl.action?" \
@@ -68,7 +65,6 @@ class CheckIn(object):
     submit_login_url = "https://open.e.189.cn/api/logbox/oauth2/loginSubmit.do"
     sign_url = ("https://api.cloud.189.cn/mkt/userSign.action?rand=%s"
                 "&clientType=TELEANDROID&version=8.6.3&model=SM-G930K")
-    logout_url='https://cloud.189.cn/api/portal/logout.action?redirectURL=https://cloud.189.cn/web/login.html'
 
     def __init__(self, username, password):
         self.username = username
@@ -92,9 +88,9 @@ class CheckIn(object):
         response = self.client.get(self.sign_url % rand, headers=headers)
         net_disk_bonus = response.json()["netdiskBonus"]
         if response.json()["isSign"] == "false":
-            notify(f"未签到，签到获得{net_disk_bonus}M空间")
+            print(f"未签到，签到获得{net_disk_bonus}M空间")
         else:
-            notify(f"已经签到过了，签到获得{net_disk_bonus}M空间")
+            print(f"已经签到过了，签到获得{net_disk_bonus}M空间")
         headers = {
             "User-Agent": "Mozilla/5.0 (Linux; Android 5.1.1; SM-G930K Build/NRD90M; wv) "
                           "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0"
@@ -107,19 +103,16 @@ class CheckIn(object):
         }
         response = self.client.get(url, headers=headers)
         if "errorCode" in response.text:
-            notify(response.text)
+            print(response.text)
         else:
             prize_name = (response.json() or {}).get("prizeName")
-            notify(f"抽奖获得{prize_name}")
+            print(f"抽奖获得{prize_name}")
         response = self.client.get(url2, headers=headers)
         if "errorCode" in response.text:
-            notify(response.text)
+            print(response.text)
         else:
             prize_name = (response.json() or {}).get("prizeName")
-            notify(f"抽奖获得{prize_name}")
-        #退出登录    
-        self.client.get(self.logout_url)
-
+            print(f"抽奖获得{prize_name}")
 
     @staticmethod
     def rsa_encode(rsa_key, string):
@@ -152,10 +145,9 @@ class CheckIn(object):
             "paramId": param_id,
         }
         r = self.client.post(self.submit_login_url, data=data, headers=headers, timeout=5)
-        if r.json()["result"] == 0:
-            notify(r.json()["msg"])
-        else:
-            notify(r.json()["msg"])
+        print(r.json()["msg"])
+        if '图形验证码错误' in r.json()["msg"]:
+            raise Exception("账户需输入验证码，请手动在app登录一次或修改密码后重试脚本")
         redirect_url = r.json()["toUrl"]
         self.client.get(redirect_url)
 
