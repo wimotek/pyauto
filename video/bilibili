@@ -18,8 +18,18 @@ import random
 import requests
 import logging
 
+# 导入账户
+BILIBILI_COM=''
+if "BILIBILI_COM" in os.environ and os.environ["BILIBILI_COM"]:
+    BILIBILI_COM = os.environ["BILIBILI_COM"]
+if BILIBILI_COM:
+    biliCookiesArr= BILIBILI_COM("@")
+else:
+    logger.info(f'失败原因:请配置环境变量BILIBILI_COM. 多帐号用@隔开')
+    sys.exit(0)
+
+
 bili=True#bilibili签到总开关
-biliCookies=[{'SESSDATA':'xxxx','bili_jct':'xxxx'}]#哔哩哔哩账号cookie存放
 paly=True#每日播放任务开关，True开启，False关闭
 biliSign=True#每日签到任务开关，True开启，False关闭
 coin=True#每日投币任务开关，True开启，False关闭
@@ -292,7 +302,7 @@ def task_palyVideo(cookie):
         return err
 
 def task_run():
-        notify('BiLiBiLiSign\n共检测到'+str(len(biliCookies))+'个账号')
+        notify('BiLiBiLiSign\n共检测到'+str(len(biliCookiesArr))+'个账号')
         count=1
         for i in biliCookies:
                 notify('正在进行第'+str(count)+'个账号')
