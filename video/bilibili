@@ -1,0 +1,324 @@
+# !/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# @Time    : 2021/9/26
+# @Author  : 智多科技www.wimotek.com 交流群:34989949
+# @File    : V_QQ_COM.py
+# @Software: IDLE
+
+'''
+cron:  16 0 * * * V_QQ_COM.py
+new Env('BILIBILI签到');
+'''
+import os
+import re
+import sys
+import json
+import time
+import random
+import requests
+import logging
+
+bili=True#bilibili签到总开关
+biliCookies=[{'SESSDATA':'xxxx','bili_jct':'xxxx'}]#哔哩哔哩账号cookie存放
+paly=True#每日播放任务开关，True开启，False关闭
+biliSign=True#每日签到任务开关，True开启，False关闭
+coin=True#每日投币任务开关，True开启，False关闭
+share=True#每日分享任务开关，True开启，False关闭
+
+sleep=3#操作延时，请设置3秒以上延时以防出现问题！
+multiply=1  #默认投币数
+select_like=0 #投币时是否点赞，0：不点赞；1：点赞
+progress=0#上报观看视频任务观看进度。单位为秒，默认为0
+##########################原神区设置##########################
+genshin=True#原神签到总开关
+genshinCookies= ['xxxxx']#哔哩哔哩账号cookie存放
+##########################v2ex区设置##########################
+v2ex=True#下次一定做
+v2exCookies= []#下次一定做
+##########################以下设置不要动##########################
+bili_header={
+        'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+}
+err=101
+success=110
+
+
+
+
+
+# 日志模块
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logFormat = logging.Formatter("%(message)s")
+
+# 日志输出流
+stream = logging.StreamHandler()
+stream.setFormatter(logFormat)
+logger.addHandler(stream)
+
+#本地配置
+#os.environ["V_QQ_COM_COOKIE"]=''
+    
+# 配信文件
+try:
+    from sendNotify import send
+except Exception as error:
+    logger.info('推送文件有误')
+    logger.info(f'失败原因:{error}')
+    sys.exit(0)
+
+# 配信内容格式
+allMess = ''
+def notify(content=None):
+    global allMess
+    allMess = allMess + content + '\n'
+    logger.info(content)
+
+# 导入账户
+V_QQ_COM_COOKIE=''
+if "V_QQ_COM_COOKIE" in os.environ and os.environ["V_QQ_COM_COOKIE"]:
+   V_QQ_COM_COOKIE = os.environ["V_QQ_COM_COOKIE"]
+if V_QQ_COM_COOKIE:
+    ckArr= V_QQ_COM_COOKIE.split("@")
+else:
+    logger.info(f'失败原因:请配置环境变量V_QQ_COM_COOKIE')
+    sys.exit(0)
+    
+# 日志录入时间
+notify(f"任务:BILIBILI签到\n时间:{time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())}")
+
+def getRandomVideo(cookie):
+        i=random.randint(1,101)
+        url = 'http://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all'
+        res = requests.get(url=url, headers=bili_header,cookies=cookie)
+        result=json.loads(res.text)
+        if result['code']==0:
+                videoList=result['data']["list"]
+                choseVideo=videoList[i]
+                notify('当前选择了视频：%s up主：%s' %(choseVideo['title'],choseVideo['owner']['name']))
+                return choseVideo['aid']
+        else:
+                return err
+
+def userInfo(cookie):
+        r=requests.get(url='http://api.bilibili.com/nav',headers=bili_header,cookies=cookie)
+        user_info=json.loads(r.text)
+        if user_info['code'] == 0:
+                notify('登录成功！')
+                user_info=user_info['data']
+                notify('当前用户：%s 等级%d。'%(user_info['uname'],user_info['level_info']['current_level']))
+                if user_info['level_info']['current_level'] < 6:
+                        notify('升级下一等级需达到的经验为:%d'%user_info['level_info']['next_exp'])
+                return success
+        else:
+                notify('登录失败，BiLiBiLiSign退出当前账号')
+                return err
+
+
+def getExp(cookie):
+        url='http://api.bilibili.com/x/web-interface/coin/today/exp'
+        r=requests.get(url=url,headers=bili_header,cookies=cookie)
+        result=json.loads(r.text)
+        if result['code'] == 0:
+                return result['data']
+        else:
+                return err
+def coinAdd(cookie,**kwargs):
+        url='http://api.bilibili.com/x/web-interface/coin/add'
+        if kwargs.get('aid') == None and kwargs.get('bid') == None :
+                notify('视频id未传入')
+        else:
+                if kwargs.get('bid') == None:
+                        data={
+                                'aid':kwargs['aid'],
+                                'multiply':multiply,
+                                'select_like':select_like,
+                                'csrf':cookie['bili_jct']
+                              }
+                else:
+                        data = {
+                                'bvid': kwargs['bid'],
+                                'multiply': multiply,
+                                'select_like': select_like,
+                                'csrf': cookie['bili_jct']
+                        }
+                r=requests.post(url=url,headers=bili_header,cookies=cookie,data=data)
+                result=json.loads(r.text)
+                code=result['code']
+                if code == 0:
+                        notify('投币成功，数量为 %d'%multiply)
+                        return success
+                else:
+                        notify(result)
+                        return err
+
+def task_addCoin(cookie):
+        notify('投币任务开始...')
+        err_flag=0
+        while(True):
+                if err_flag>=20:
+                        notify('错误次数过多，退出任务！')
+                        break
+                exp=getExp(cookie)
+                if exp == err:
+                        notify('api请求失败')
+                        err_flag += 1
+                else:
+                        notify('当前已投币 %d '%(exp/10))
+                        if exp<50:
+                                aid=getRandomVideo(cookie)
+                                if aid==err:
+                                        notify('获取视频失败')
+                                        err_flag+=1
+                                else:
+                                        notify('开始投币...')
+                                        if coinAdd(cookie,aid=aid) == err:
+                                                err_flag += 1
+                                time.sleep(sleep)
+                        else:
+                                notify('投币任务已完成...')
+                                break
+def shareVideo(cookie,**kwargs):
+        url='https://api.bilibili.com/x/web-interface/share/add'
+        if kwargs.get('aid') == None and kwargs.get('bid') == None :
+                notify('视频id未传入')
+        else:
+                if kwargs.get('bid') == None:
+                        data={
+                                'aid':kwargs['aid'],
+                                'csrf':cookie['bili_jct']
+                              }
+                else:
+                        data = {
+                                'bvid': kwargs['bid'],
+                                'csrf': cookie['bili_jct']
+                        }
+                r=requests.post(url=url,headers=bili_header,cookies=cookie,data=data)
+                result=json.loads(r.text)
+                code=result['code']
+                if code == 0:
+                        notify('视频分享成功！')
+                        return success
+                else:
+                        notify('视频分享失败')
+                        return err
+def task_share(cookie):
+        notify('分享任务开始...')
+        for i in range(20):
+                if shareVideo(cookie,aid=getRandomVideo(cookie))==success:
+                        notify('分享任务已完成...')
+                        return success
+                else:
+                        notify('正在重试...')
+        notify('错误次数过多，退出任务！')
+        return err
+def task_sign(cookie):
+        url='https://api.live.bilibili.com/sign/doSign'
+        r = requests.get(url=url, headers=bili_header, cookies=cookie)
+        result = json.loads(r.text)
+
+        code = result['code']
+        if code == 0:
+                notify('bilibili直播签到成功！')
+                return success
+        elif code == 1011040:
+                notify('重复签到')
+                return success
+        else:
+                notify('签到失败')
+                return err
+def getCid(cookie,**kwargs):
+        url='http://api.bilibili.com/x/web-interface/view?'
+        if kwargs.get('aid') == None and kwargs.get('bid') == None :
+                notify('视频id未传入')
+        else:
+                if kwargs.get('bid') == None:
+                        url+='aid=%d'%kwargs['aid']
+                else:
+                        url+='bvid=%s'%kwargs['bid']
+                r=requests.get(url=url,headers=bili_header,cookies=cookie)
+                result=json.loads(r.text)
+                code=result['code']
+                if code == 0:
+                        return result['data']['cid']
+                else:
+                        return err
+
+def repotVideo(cookie,**kwargs):
+        url='http://api.bilibili.com/x/click-interface/web/heartbeat'
+        if kwargs.get('aid') == None and kwargs.get('bid') == None:
+                notify('视频id未传入')
+        else:
+                if kwargs.get('bid') == None:
+                        cid=getCid(cookie,aid=kwargs['aid'])
+                        if cid == err:
+                                notify('观看记录上报失败！')
+                                return err
+                        data = {
+                                'aid': kwargs['aid'],
+                                'progress':progress,
+                                'cid':cid
+                                }
+                else:
+                        cid = getCid(cookie, bid=kwargs['bid'])
+                        if cid == err:
+                                notify('观看记录上报失败！')
+                                return err
+                        data = {
+                                'bvid': kwargs['bid'],
+                                'progress': progress,
+                                'cid': cid
+                        }
+                r = requests.post(url=url, headers=bili_header, cookies=cookie, data=data)
+                result = json.loads(r.text)
+                code = result['code']
+                if code == 0:
+                        notify('观看记录上报成功')
+                        return success
+                else:
+                        notify('观看记录上报失败!!')
+                        return err
+def task_palyVideo(cookie):
+        notify('开始播放视频任务...')
+        for i in range(20):
+                if repotVideo(cookie,aid=getRandomVideo(cookie))==success:
+                        notify('分享任务已完成...')
+                        return success
+                else:
+                        notify('正在重试...')
+        notify('错误次数过多，退出任务！')
+        return err
+
+def task_run():
+        notify('BiLiBiLiSign\n共检测到'+str(len(biliCookies))+'个账号')
+        count=1
+        for i in biliCookies:
+                notify('正在进行第'+str(count)+'个账号')
+                if userInfo(i)==err:
+                        continue
+                if biliSign==True:
+                        task_sign(i)
+                        time.sleep(sleep)
+                if paly==True:
+                        task_palyVideo(i)
+                        time.sleep(sleep)
+                if coin==True:
+                        task_addCoin(i)
+                        time.sleep(sleep)
+                if share==True:
+                        task_share(i)
+                        time.sleep(sleep)
+                count+=1
+        notify('BiLiBiLi签到完成')
+
+
+  except Exception as error: 
+    logger.info(f'失败原因:{error}')
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+       task_run()
+    send('BILIBILI签到',allMess)
