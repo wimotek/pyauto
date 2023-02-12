@@ -6,7 +6,7 @@
 # @Software: IDLE
 
 '''
-cron:  30 0 * * * CLOUD_189_CN.py
+cron:  30 0 * * * could_189_cn.py
 new Env('天翼云签到脚本');
 '''
 import os
