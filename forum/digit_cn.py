@@ -82,7 +82,7 @@ def start():
     s.headers.update(headers)
     #print(headers)
 
-    res=s.get(url,allow_directs=False).text
+    res=s.get(url,allow_redirects=False).text
     #print("==>",res)
 
     #获取formhash
