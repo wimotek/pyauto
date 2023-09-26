@@ -29,7 +29,7 @@ stream.setFormatter(logFormat)
 logger.addHandler(stream)
 
 #本地配置
-#os.environ["22VD_COOKIE"]=''
+#os.environ["VD_COOKIE"]=''
     
 # 配信文件
 try:
@@ -46,17 +46,21 @@ def notify(content=None):
     allMess = allMess + content + '\n'
     logger.info(content)
 
-# 导入账户
-22VD_COOKIE=''
-if "22VD_COOKIE" in os.environ and os.environ["22VD_COOKIE"]:
-    22VD_COOKIE = os.environ["22VD_COOKIE"]
-if 22VD_COOKIE:
-    ckArr= 22VD_COOKIE.split("@")
-else:
-    logger.info(f'失败原因:请配置环境变量22VD_COOKIE')
-    sys.exit(0)
+
 #本地测试:
-22VD_COOKIE='Hm_lvt_8041e164e331efcd17a75126a3d7bc12=1695696191; myad=1; wordpress_logged_in_f60133e7528c48385cd3315bab925252=19219.666.25040864079b5967853781ff1b12c4c9%7C1696906240%7CuHtmyOPyeQ9hdmPU061sHT1T3dCrvOwgxbEAxuLJfYT%7C04bf8adec309a8dfa9997f33f11310a78805f93abf610be7c0df39d7f1be0dd1; wp_xh_session_f60133e7528c48385cd3315bab925252=d426e043a2b6eb81dcb23961c563016d%7C%7C1695869439%7C%7C1695865839%7C%7Cc2c6a88553e9950f36cb6f556b9d7f3f; pll_language=zh; PHPSESSID=us60e1c4kdcspsvnsgkb1icin2; Hm_lpvt_8041e164e331efcd17a75126a3d7bc12=1695698799; pupmove=true'
+VD_COOKIE='Hm_lvt_8041e164e331efcd17a75126a3d7bc12=1695696191; myad=1; wordpress_logged_in_f60133e7528c48385cd3315bab925252=19219.666.25040864079b5967853781ff1b12c4c9%7C1696906240%7CuHtmyOPyeQ9hdmPU061sHT1T3dCrvOwgxbEAxuLJfYT%7C04bf8adec309a8dfa9997f33f11310a78805f93abf610be7c0df39d7f1be0dd1; wp_xh_session_f60133e7528c48385cd3315bab925252=d426e043a2b6eb81dcb23961c563016d%7C%7C1695869439%7C%7C1695865839%7C%7Cc2c6a88553e9950f36cb6f556b9d7f3f; pll_language=zh; PHPSESSID=us60e1c4kdcspsvnsgkb1icin2; Hm_lpvt_8041e164e331efcd17a75126a3d7bc12=1695698799; pupmove=true'
+
+# 导入账户
+#VD_COOKIE=''
+
+if "VD_COOKIE" in os.environ and os.environ["VD_COOKIE"]:
+    VD_COOKIE = os.environ["VD_COOKIE"]
+if VD_COOKIE:
+    ckArr= VD_COOKIE.split("@")
+else:
+    logger.info(f'失败原因:请配置环境变量VD_COOKIE')
+    sys.exit(0)
+
 # 日志录入时间
 notify(f"任务:云模板签到\n时间:{time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())}")
 
@@ -85,7 +89,7 @@ def start():
     s.headers.update(headers)
     #print(headers)
 
-    res=s.get(url,allow_redirects=False).text
+    #res=s.get(url,allow_redirects=False).text
     #print("==>",res)
 
    
@@ -96,13 +100,15 @@ def start():
           }
     
     res=s.post(sign_url,data=headers)
-    #print("==>",res.text)
-    print(res)
-
+    if res.text=='2' :
+      notify(f"您今天已经签到过了")
+             
     #推送消息
+    res=s.get(url,allow_redirects=False).text
+    #print("==>",res)
     
     #<div><span class="title">连续签到：</span><span><b>(\d+)</b> 天</span></div>
-    daynum=re.findall(r'连续签到：</span><span><b>(\d+)</b> 天</span></div>',res.text)
+    daynum=re.findall(r'连续签到：</span><span><b>(\d+)</b> 天</span></div>',res)
     if daynum:
         notify(f"连续签到{daynum[0]}天")
     else:
@@ -120,4 +126,3 @@ if __name__ == '__main__':
     for ck in ckArr:
        start()
     send('云模板签到',allMess)
-
