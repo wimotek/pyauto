@@ -6,7 +6,7 @@
 # @Software: IDLE
 
 '''
-cron:  16 5,12 * * * 22vd_com.py
+cron:  16 0 * * * 22vd_com.py
 new Env('云模板签到');
 '''
 import os
