@@ -89,9 +89,9 @@ def start():
     s.headers.update(headers)
     #登录
     #https://wox2019.woxshare.com/publicApi/weiXinAuthorizationUserSession
-    __json ={"appId":"wx7c9e21aa951ca0b8","js_code":"0d3I3BGa1RENdG0udpJa13OeXa3I3BGa","token": ck,"version":"4.08.19","bid":"jfdi","mkeyUrl":"/publicApi/weiXinAuthorizationUserSession","mkey":"502ae7cc55f6fd13bfe2397c4f5cbb938af37ea2"}
-    rsp_dict=s.post(url,json=__json).json()
-    print(rsp_dict)
+    #__json ={"appId":"wx7c9e21aa951ca0b8","js_code":"0d3I3BGa1RENdG0udpJa13OeXa3I3BGa","token": ck,"version":"4.08.19","bid":"jfdi","mkeyUrl":"/publicApi/weiXinAuthorizationUserSession","mkey":"502ae7cc55f6fd13bfe2397c4f5cbb938af37ea2"}
+    #rsp_dict=s.post(url,json=__json).json()
+    #print(rsp_dict)
     
     #签到
     __json ={
