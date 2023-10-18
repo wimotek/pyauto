@@ -6,7 +6,7 @@
 # @Software: IDLE
 
 '''
-cron:  16 7 * * * hlgw.py
+cron:  16 7,20 * * * hlgw.py
 new Env('欢乐港湾签到');
 '''
 import os
